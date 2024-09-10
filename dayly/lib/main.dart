@@ -1,4 +1,6 @@
+import 'package:dayly/ui/main/ui_quote.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 void main() {
   runApp(const MainApp());
@@ -9,21 +11,19 @@ class MainApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return GetMaterialApp(
       home: Scaffold(
-        floatingActionButton: FloatingActionButton.extended(
-            onPressed: () {
-              print("Hello, world!");
-            },
-            label: const Text("New Task")),
-        body: CustomScrollView(
-          slivers: [
-            const SliverAppBar.large(
-              title: Text("Dayly"),
-            ),
-          ],
-        ),
-      ),
+          floatingActionButton: FloatingActionButton.extended(
+              onPressed: () {
+                print("Hello, world!");
+              },
+              label: const Text("New Task")),
+          body: const SafeArea(
+              child: Padding(
+                  padding: EdgeInsets.all(15),
+                  child: Column(
+                    children: [UiQuote()],
+                  )))),
     );
   }
 }
