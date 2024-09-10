@@ -9,10 +9,19 @@ class MainApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
+    return MaterialApp(
       home: Scaffold(
-        body: Center(
-          child: Text('Hello World!'),
+        floatingActionButton: FloatingActionButton.extended(
+            onPressed: () {
+              print("Hello, world!");
+            },
+            label: const Text("New Task")),
+        body: CustomScrollView(
+          slivers: [
+            const SliverAppBar.large(
+              title: Text("Dayly"),
+            ),
+          ],
         ),
       ),
     );
