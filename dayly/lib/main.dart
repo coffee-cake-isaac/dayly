@@ -26,9 +26,6 @@ class MainApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final data = List.from(Data);
-    final double itemHeight = 180;
-
     return GetMaterialApp(
       home: Scaffold(
           backgroundColor: const Color.fromRGBO(58, 66, 86, 1.0),
@@ -64,9 +61,11 @@ class MainApp extends StatelessWidget {
                         itemBuilder: (context, index) => Container(
                             height: 135,
                             child: Card(
+                                elevation: 7,
+                                color: const Color.fromARGB(255, 26, 26, 61),
                                 child: Text(
-                              Data[index].name!,
-                            )))),
+                                  Data[index].name!,
+                                )))),
                   )
                 ],
               ))),
