@@ -7,4 +7,13 @@ class Task {
   DateTime? dueDate;
   bool isRepeating = false;
   RepeatFrequency? frequency;
+
+  Task({
+    this.name,
+    this.isDone = false,
+    this.description,
+    this.dueDate,
+    this.isRepeating = false,
+    this.frequency,
+  });
 }

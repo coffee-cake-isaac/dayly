@@ -37,7 +37,8 @@ class TaskCard extends StatelessWidget {
 
     return Card(
       elevation: 8.0,
-      margin: const EdgeInsets.symmetric(horizontal: 0.0, vertical: 6.0),
+      clipBehavior: Clip.antiAliasWithSaveLayer,
+      margin: const EdgeInsets.symmetric(horizontal: 0.0, vertical: 5.0),
       child: Container(
         decoration: const BoxDecoration(color: Color.fromRGBO(64, 75, 96, .9)),
         child: makeListTile,

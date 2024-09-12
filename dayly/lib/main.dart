@@ -1,11 +1,23 @@
-import 'package:dayly/ui/main/filter_chips.dart';
-import 'package:dayly/ui/main/task_card.dart';
+import 'package:calendar_timeline/calendar_timeline.dart';
+import 'package:dayly/ui/main/task_card_preview.dart';
 import 'package:dayly/ui/main/ui_quote.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import 'package:stacked_listview/stacked_listview.dart';
+
+import 'models/data.dart';
+import 'ui/main/normal_list.dart';
 
 void main() {
+  SystemChrome.setSystemUIOverlayStyle(
+    const SystemUiOverlayStyle(
+      statusBarColor: Colors.transparent,
+      systemNavigationBarColor: Color.fromRGBO(58, 66, 86, 1.0),
+    ),
+  );
   runApp(const MainApp());
 }
 
@@ -14,6 +26,9 @@ class MainApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final data = List.from(Data);
+    final double itemHeight = 180;
+
     return GetMaterialApp(
       home: Scaffold(
           backgroundColor: const Color.fromRGBO(58, 66, 86, 1.0),
@@ -23,104 +38,44 @@ class MainApp extends StatelessWidget {
               },
               label: const Text("New Task")),
           body: SafeArea(
-              child: Padding(
-                  padding: const EdgeInsets.all(15),
-                  child: SingleChildScrollView(
-                      child: Column(
-                    children: [
-                      const Center(child: UiQuote()),
-                      SingleChildScrollView(
-                        scrollDirection: Axis.horizontal,
-                        child: Row(
-                          children: [FilterChips()],
-                        ),
-                      ),
-                      SizedBox(
-                          height: 350,
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Container(
-                                  color: Colors.green,
-                                  child: Row(
-                                    children: [
-                                      Text(
-                                        DateFormat.EEEE()
-                                            .format(DateTime.now()),
-                                        style: const TextStyle(
-                                            color: Colors.white,
-                                            fontSize: 32,
-                                            fontWeight: FontWeight.w200),
-                                      )
-                                    ],
-                                  )),
-                              Container(
-                                child: Row(
-                                  children: [
-                                    Column(
-                                      children: [
-                                        Text(
-                                          '${DateTime.now().day}',
-                                          style: const TextStyle(
-                                              fontSize: 80,
-                                              color: Colors.white,
-                                              fontWeight: FontWeight.bold,
-                                              height: 1),
-                                        ),
-                                        Text(
-                                          DateFormat.MMM()
-                                              .format(DateTime.now()),
-                                          style: const TextStyle(
-                                              fontSize: 56,
-                                              color: Colors.white,
-                                              fontWeight: FontWeight.w200,
-                                              height: 1),
-                                        )
-                                      ],
-                                    ),
-                                    const Spacer(),
-                                    const Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.end,
-                                      children: [
-                                        Text(
-                                          "435 Completed Tasks",
-                                          style: TextStyle(
-                                              fontSize: 24,
-                                              color: Colors.white),
-                                        ),
-                                        Text(
-                                          "435 Completed Tasks",
-                                          style: TextStyle(
-                                              fontSize: 24,
-                                              color: Colors.white),
-                                        ),
-                                        Text(
-                                          "435 Completed Tasks",
-                                          style: TextStyle(
-                                              fontSize: 24,
-                                              color: Colors.white),
-                                        ),
-                                      ],
-                                    )
-                                  ],
-                                ),
-                              )
-                            ],
-                          )),
-                      SingleChildScrollView(
-                        child: Expanded(
-                            child: ListView.builder(
-                                physics: const NeverScrollableScrollPhysics(),
-                                shrinkWrap: true,
-                                scrollDirection: Axis.vertical,
-                                itemCount: 18,
-                                itemBuilder: (BuildContext context, int index) {
-                                  return const TaskCard();
-                                })),
-                      )
-                    ],
-                  ))))),
+              bottom: false,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Center(child: UiQuote()),
+                  CalendarTimeline(
+                    initialDate: DateTime.now(),
+                    firstDate: DateTime.now(),
+                    lastDate: DateTime.now().add(const Duration(days: 365)),
+                    onDateSelected: (date) => print(date),
+                    leftMargin: 20,
+                    monthColor: Colors.blueGrey,
+                    dayColor: Colors.lightBlueAccent[200],
+                    activeDayColor: Colors.white,
+                    activeBackgroundDayColor: Colors.lightBlueAccent,
+                    selectableDayPredicate: (date) => date.day != 23,
+                    locale: 'en_ISO',
+                  ),
+                  Expanded(
+                    child: ListView.builder(
+                        shrinkWrap: true,
+                        padding: EdgeInsets.all(15),
+                        itemCount: Data.length,
+                        itemBuilder: (context, index) => Container(
+                            height: 135,
+                            child: Card(
+                                child: Text(
+                              Data[index].name!,
+                            )))),
+                  )
+                ],
+              ))),
     );
   }
+}
+
+// Function to map the index to valid green shades
+int getShadeFromIndex(int index) {
+  const shades = [300, 400, 500, 600, 700, 800, 900];
+  return shades[index % shades.length]; // Cycle through the shades
 }
