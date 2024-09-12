@@ -55,17 +55,24 @@ class MainApp extends StatelessWidget {
                   ),
                   Expanded(
                     child: ListView.builder(
-                        shrinkWrap: true,
-                        padding: EdgeInsets.all(15),
-                        itemCount: Data.length,
-                        itemBuilder: (context, index) => Container(
-                            height: 135,
-                            child: Card(
-                                elevation: 7,
-                                color: const Color.fromARGB(255, 26, 26, 61),
-                                child: Text(
-                                  Data[index].name!,
-                                )))),
+                      shrinkWrap: true,
+                      padding: const EdgeInsets.all(15),
+                      itemCount: Data.length,
+                      itemBuilder: (context, index) => Container(
+                          height: 135,
+                          child: Card(
+                              elevation: 7,
+                              color: const Color.fromARGB(255, 105, 122, 160),
+                              child: Padding(
+                                  padding: const EdgeInsets.all(15),
+                                  child: Text(
+                                    Data[index].name!,
+                                    style: const TextStyle(
+                                        fontSize: 28,
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.w300),
+                                  )))),
+                    ),
                   )
                 ],
               ))),
