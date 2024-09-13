@@ -30,10 +30,12 @@ class MainApp extends StatelessWidget {
       home: Scaffold(
           backgroundColor: const Color.fromRGBO(58, 66, 86, 1.0),
           floatingActionButton: FloatingActionButton.extended(
-              onPressed: () {
-                print("Hello, world!");
-              },
-              label: const Text("New Task")),
+            label: Text("Add Task"),
+            shape: StadiumBorder(),
+            onPressed: () {
+              print("Hello, world!");
+            },
+          ),
           body: SafeArea(
               bottom: false,
               child: Column(
