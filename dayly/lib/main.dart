@@ -1,28 +1,41 @@
 import 'package:calendar_timeline/calendar_timeline.dart';
-import 'package:dayly/ui/main/task_card_preview.dart';
+import 'package:dayly/logic/task_dac.dart';
+import 'package:dayly/models/frequency.dart';
+import 'package:dayly/models/task.dart';
 import 'package:dayly/ui/main/ui_quote.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
-import 'package:intl/intl.dart';
-import 'package:stacked_listview/stacked_listview.dart';
-
 import 'models/data.dart';
-import 'ui/main/normal_list.dart';
 
-void main() {
+void main() async {
   SystemChrome.setSystemUIOverlayStyle(
     const SystemUiOverlayStyle(
       statusBarColor: Colors.transparent,
       systemNavigationBarColor: Color.fromRGBO(58, 66, 86, 1.0),
     ),
   );
-  runApp(const MainApp());
+
+  WidgetsFlutterBinding.ensureInitialized();
+
+  TaskDac dac = TaskDac();
+  await dac.createDatabase();
+  await dac.insertTask(Task(
+      name: "Test",
+      isDone: false,
+      description: "A description",
+      dueDate: DateTime.now(),
+      isRepeating: false,
+      frequency: RepeatFrequency(interval: 1, unit: RepeatUnit.hours)));
+  await dac.getAllTasks();
+
+  runApp(MainApp(dac: dac));
 }
 
 class MainApp extends StatelessWidget {
-  const MainApp({super.key});
+  final TaskDac dac;
+
+  const MainApp({super.key, required this.dac});
 
   @override
   Widget build(BuildContext context) {
@@ -31,6 +44,7 @@ class MainApp extends StatelessWidget {
           backgroundColor: const Color.fromRGBO(58, 66, 86, 1.0),
           floatingActionButton: FloatingActionButton.extended(
             label: Text("Add Task"),
+            backgroundColor: Colors.lightBlueAccent,
             shape: StadiumBorder(),
             onPressed: () {
               print("Hello, world!");
@@ -56,25 +70,28 @@ class MainApp extends StatelessWidget {
                     locale: 'en_ISO',
                   ),
                   Expanded(
-                    child: ListView.builder(
-                      shrinkWrap: true,
-                      padding: const EdgeInsets.all(15),
-                      itemCount: Data.length,
-                      itemBuilder: (context, index) => Container(
-                          height: 135,
-                          child: Card(
-                              elevation: 7,
-                              color: const Color.fromARGB(255, 105, 122, 160),
-                              child: Padding(
-                                  padding: const EdgeInsets.all(15),
-                                  child: Text(
-                                    Data[index].name!,
-                                    style: const TextStyle(
-                                        fontSize: 28,
-                                        color: Colors.white,
-                                        fontWeight: FontWeight.w300),
-                                  )))),
-                    ),
+                    child: Padding(
+                        padding: EdgeInsets.only(top: 15),
+                        child: ListView.builder(
+                          shrinkWrap: true,
+                          padding: const EdgeInsets.all(15),
+                          itemCount: dac.tasks.length,
+                          itemBuilder: (context, index) => Container(
+                              height: 135,
+                              child: Card(
+                                  elevation: 7,
+                                  color:
+                                      const Color.fromARGB(255, 105, 122, 160),
+                                  child: Padding(
+                                      padding: const EdgeInsets.all(15),
+                                      child: Text(
+                                        dac.tasks[index].name!,
+                                        style: const TextStyle(
+                                            fontSize: 28,
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.w300),
+                                      )))),
+                        )),
                   )
                 ],
               ))),
