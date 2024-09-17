@@ -5,28 +5,23 @@ import 'package:dayly/models/task.dart';
 import 'package:dayly/ui/main/ui_quote.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 import 'models/data.dart';
 
 void main() async {
   SystemChrome.setSystemUIOverlayStyle(
     const SystemUiOverlayStyle(
-      statusBarColor: Colors.transparent,
-      systemNavigationBarColor: Color.fromRGBO(58, 66, 86, 1.0),
-    ),
+        statusBarColor: Colors.transparent,
+        systemNavigationBarColor: Color.fromARGB(255, 38, 40, 45)),
   );
 
   WidgetsFlutterBinding.ensureInitialized();
 
   TaskDac dac = TaskDac();
   await dac.createDatabase();
-  await dac.insertTask(Task(
-      name: "Test",
-      isDone: false,
-      description: "A description",
-      dueDate: DateTime.now(),
-      isRepeating: false,
-      frequency: RepeatFrequency(interval: 1, unit: RepeatUnit.hours)));
+
   await dac.getAllTasks();
 
   runApp(MainApp(dac: dac));
@@ -41,13 +36,33 @@ class MainApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return GetMaterialApp(
       home: Scaffold(
-          backgroundColor: const Color.fromRGBO(58, 66, 86, 1.0),
+          backgroundColor: const Color.fromARGB(255, 38, 40, 45),
           floatingActionButton: FloatingActionButton.extended(
-            label: Text("Add Task"),
-            backgroundColor: Colors.lightBlueAccent,
-            shape: StadiumBorder(),
+            label: const Text("Add Task"),
+            backgroundColor: Colors.grey,
+            shape: const StadiumBorder(),
             onPressed: () {
-              print("Hello, world!");
+              showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return Expanded(
+                    child: AlertDialog(
+                      title: Text('Welcome'),
+                      content: Text('GeeksforGeeks'),
+                      actions: [
+                        TextButton(
+                          onPressed: () {},
+                          child: Text('CANCEL'),
+                        ),
+                        TextButton(
+                          onPressed: () {},
+                          child: Text('ACCEPT'),
+                        ),
+                      ],
+                    ),
+                  );
+                },
+              );
             },
           ),
           body: SafeArea(
@@ -62,36 +77,104 @@ class MainApp extends StatelessWidget {
                     lastDate: DateTime.now().add(const Duration(days: 365)),
                     onDateSelected: (date) => print(date),
                     leftMargin: 20,
-                    monthColor: Colors.blueGrey,
-                    dayColor: Colors.lightBlueAccent[200],
+                    monthColor: Colors.white,
+                    dayColor: Colors.white,
                     activeDayColor: Colors.white,
-                    activeBackgroundDayColor: Colors.lightBlueAccent,
+                    activeBackgroundDayColor: Colors.grey,
                     selectableDayPredicate: (date) => date.day != 23,
                     locale: 'en_ISO',
                   ),
                   Expanded(
-                    child: Padding(
-                        padding: EdgeInsets.only(top: 15),
-                        child: ListView.builder(
-                          shrinkWrap: true,
-                          padding: const EdgeInsets.all(15),
-                          itemCount: dac.tasks.length,
-                          itemBuilder: (context, index) => Container(
-                              height: 135,
-                              child: Card(
-                                  elevation: 7,
-                                  color:
-                                      const Color.fromARGB(255, 105, 122, 160),
-                                  child: Padding(
-                                      padding: const EdgeInsets.all(15),
-                                      child: Text(
-                                        dac.tasks[index].name!,
-                                        style: const TextStyle(
-                                            fontSize: 28,
-                                            color: Colors.white,
-                                            fontWeight: FontWeight.w300),
-                                      )))),
-                        )),
+                    child: AnimationLimiter(
+                        child: Padding(
+                            padding: const EdgeInsets.only(top: 15),
+                            child: ListView.builder(
+                              shrinkWrap: true,
+                              padding: const EdgeInsets.all(15),
+                              itemCount: dac.tasks.length,
+                              itemBuilder: (context, index) {
+                                return AnimationConfiguration.staggeredList(
+                                    position: index,
+                                    child: SlideAnimation(
+                                        verticalOffset: 50.0,
+                                        child: FadeInAnimation(
+                                            child: SizedBox(
+                                                height: 145,
+                                                child: Card(
+                                                    elevation: 7,
+                                                    color: const Color.fromARGB(
+                                                        255, 98, 98, 98),
+                                                    child: Padding(
+                                                        padding:
+                                                            const EdgeInsets
+                                                                .all(15),
+                                                        child: Column(
+                                                            crossAxisAlignment:
+                                                                CrossAxisAlignment
+                                                                    .start,
+                                                            children: [
+                                                              Text(
+                                                                dac.tasks[index]
+                                                                    .name!,
+                                                                style: const TextStyle(
+                                                                    fontSize:
+                                                                        28,
+                                                                    color: Colors
+                                                                        .white,
+                                                                    fontWeight:
+                                                                        FontWeight
+                                                                            .w300),
+                                                              ),
+                                                              Row(
+                                                                crossAxisAlignment:
+                                                                    CrossAxisAlignment
+                                                                        .center,
+                                                                mainAxisAlignment:
+                                                                    MainAxisAlignment
+                                                                        .start,
+                                                                children: [
+                                                                  const Icon(
+                                                                    Icons
+                                                                        .calendar_today,
+                                                                    color: Colors
+                                                                        .white,
+                                                                    size: 15,
+                                                                  ),
+                                                                  const SizedBox(
+                                                                    width: 10,
+                                                                  ),
+                                                                  Text(
+                                                                    DateFormat('M/d/yy h:mma').format(dac
+                                                                        .tasks[
+                                                                            index]
+                                                                        .dueDate!),
+                                                                    style: const TextStyle(
+                                                                        color: Colors
+                                                                            .white,
+                                                                        fontWeight:
+                                                                            FontWeight.bold),
+                                                                  )
+                                                                ],
+                                                              ),
+                                                              SizedBox(
+                                                                  height: 10),
+                                                              Text(
+                                                                dac.tasks[index]
+                                                                    .description!,
+                                                                style: const TextStyle(
+                                                                    fontSize:
+                                                                        18,
+                                                                    color: Colors
+                                                                        .white,
+                                                                    fontWeight:
+                                                                        FontWeight
+                                                                            .w300),
+                                                              ),
+                                                              const SizedBox(
+                                                                  height: 2),
+                                                            ])))))));
+                              },
+                            ))),
                   )
                 ],
               ))),

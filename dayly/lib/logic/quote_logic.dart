@@ -6,7 +6,7 @@ import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 
 class QuoteLogic {
-  var quote = Quote(author: RxString("Yo"), message: RxString("Yo momma!"));
+  var quote = Quote(author: RxString(""), message: RxString(""));
 
   QuoteLogic() {
     initialize();
