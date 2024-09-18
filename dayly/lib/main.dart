@@ -8,17 +8,20 @@ import 'package:flutter/services.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import 'package:toastification/toastification.dart';
 
 import 'ui/main/styles/styles.dart';
 
 void main() async {
   SystemChrome.setSystemUIOverlayStyle(
-    const SystemUiOverlayStyle(statusBarColor: Colors.transparent, systemNavigationBarColor: Color.fromARGB(255, 38, 40, 45)),
+    const SystemUiOverlayStyle(
+        statusBarColor: Colors.transparent,
+        systemNavigationBarColor: Color.fromARGB(255, 38, 40, 45)),
   );
 
   WidgetsFlutterBinding.ensureInitialized();
 
-  runApp(MaterialApp(home: MainApp()));
+  runApp(ToastificationWrapper(child: MaterialApp(home: MainApp())));
 }
 
 class MainApp extends StatelessWidget {
@@ -26,7 +29,8 @@ class MainApp extends StatelessWidget {
 
   final ValueNotifier<DateTime?> _dateNotifier = ValueNotifier<DateTime?>(null);
   final ValueNotifier<bool> _switchNotifier = ValueNotifier<bool>(false);
-  final ValueNotifier<DateTime?> _currentSelectedDate = ValueNotifier<DateTime?>(null);
+  final ValueNotifier<DateTime?> _currentSelectedDate =
+      ValueNotifier<DateTime?>(null);
 
   MainApp({super.key});
 
@@ -57,10 +61,16 @@ class MainApp extends StatelessWidget {
                       valueListenable: _currentSelectedDate,
                       builder: (context, dateTime, child) {
                         return CalendarTimeline(
-                          initialDate: _currentSelectedDate.value != null ? _currentSelectedDate.value as DateTime : DateTime.now(),
+                          initialDate: _currentSelectedDate.value != null
+                              ? _currentSelectedDate.value as DateTime
+                              : DateTime.now(),
                           firstDate: DateTime.now(),
-                          lastDate: DateTime.now().add(const Duration(days: 365)),
-                          onDateSelected: (date) async => {_currentSelectedDate.value = date, await dac.getAllTasks(date)},
+                          lastDate:
+                              DateTime.now().add(const Duration(days: 365)),
+                          onDateSelected: (date) async => {
+                            _currentSelectedDate.value = date,
+                            await dac.getAllTasks(date)
+                          },
                           leftMargin: 20,
                           monthColor: Colors.white,
                           dayColor: Colors.white,
@@ -87,39 +97,82 @@ class MainApp extends StatelessWidget {
                                                     height: 145,
                                                     child: Card(
                                                         elevation: 7,
-                                                        color: const Color.fromARGB(255, 98, 98, 98),
+                                                        color: const Color
+                                                            .fromARGB(
+                                                            255, 98, 98, 98),
                                                         child: Padding(
-                                                            padding: const EdgeInsets.all(15),
-                                                            child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                                                              Text(
-                                                                dac.tasks[index].name!,
-                                                                style: const TextStyle(fontSize: 28, color: Colors.white, fontWeight: FontWeight.w300),
-                                                              ),
-                                                              Row(
-                                                                crossAxisAlignment: CrossAxisAlignment.center,
-                                                                mainAxisAlignment: MainAxisAlignment.start,
+                                                            padding:
+                                                                const EdgeInsets
+                                                                    .all(15),
+                                                            child: Column(
+                                                                crossAxisAlignment:
+                                                                    CrossAxisAlignment
+                                                                        .start,
                                                                 children: [
-                                                                  const Icon(
-                                                                    Icons.calendar_today,
-                                                                    color: Colors.white,
-                                                                    size: 15,
+                                                                  Text(
+                                                                    dac
+                                                                        .tasks[
+                                                                            index]
+                                                                        .name!,
+                                                                    style: const TextStyle(
+                                                                        fontSize:
+                                                                            28,
+                                                                        color: Colors
+                                                                            .white,
+                                                                        fontWeight:
+                                                                            FontWeight.w300),
+                                                                  ),
+                                                                  Row(
+                                                                    crossAxisAlignment:
+                                                                        CrossAxisAlignment
+                                                                            .center,
+                                                                    mainAxisAlignment:
+                                                                        MainAxisAlignment
+                                                                            .start,
+                                                                    children: [
+                                                                      const Icon(
+                                                                        Icons
+                                                                            .calendar_today,
+                                                                        color: Colors
+                                                                            .white,
+                                                                        size:
+                                                                            15,
+                                                                      ),
+                                                                      const SizedBox(
+                                                                        width:
+                                                                            10,
+                                                                      ),
+                                                                      Text(
+                                                                        DateFormat('M/d/yy h:mma').format(dac
+                                                                            .tasks[index]
+                                                                            .dueDate!),
+                                                                        style: const TextStyle(
+                                                                            color:
+                                                                                Colors.white,
+                                                                            fontWeight: FontWeight.bold),
+                                                                      )
+                                                                    ],
                                                                   ),
                                                                   const SizedBox(
-                                                                    width: 10,
-                                                                  ),
+                                                                      height:
+                                                                          10),
                                                                   Text(
-                                                                    DateFormat('M/d/yy h:mma').format(dac.tasks[index].dueDate!),
-                                                                    style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-                                                                  )
-                                                                ],
-                                                              ),
-                                                              const SizedBox(height: 10),
-                                                              Text(
-                                                                dac.tasks[index].description!,
-                                                                style: const TextStyle(fontSize: 18, color: Colors.white, fontWeight: FontWeight.w300),
-                                                              ),
-                                                              const SizedBox(height: 2),
-                                                            ])))))));
+                                                                    dac
+                                                                        .tasks[
+                                                                            index]
+                                                                        .description!,
+                                                                    style: const TextStyle(
+                                                                        fontSize:
+                                                                            18,
+                                                                        color: Colors
+                                                                            .white,
+                                                                        fontWeight:
+                                                                            FontWeight.w300),
+                                                                  ),
+                                                                  const SizedBox(
+                                                                      height:
+                                                                          2),
+                                                                ])))))));
                                   },
                                 )))),
                   )
@@ -159,22 +212,31 @@ class MainApp extends StatelessWidget {
               child: Column(
                 children: [
                   TextField(
+                    textCapitalization: TextCapitalization.sentences,
+                    textInputAction: TextInputAction.next,
                     onChanged: (value) => title = value,
                     style: TextStyle(color: Colors.white),
                     decoration: CustomThemes.getDecor('Title'),
                   ),
                   const SizedBox(height: 10),
-                  TextField(onChanged: (value) => description = value, style: TextStyle(color: Colors.white), decoration: CustomThemes.getDecor('Description')),
+                  TextField(
+                      textInputAction: TextInputAction.next,
+                      textCapitalization: TextCapitalization.sentences,
+                      onChanged: (value) => description = value,
+                      style: TextStyle(color: Colors.white),
+                      decoration: CustomThemes.getDecor('Description')),
                   const SizedBox(height: 10),
                   ValueListenableBuilder<DateTime?>(
                       valueListenable: _dateNotifier,
                       builder: (context, dateTime, child) {
-                        endDate = dateTime as DateTime;
-                        print(_dateNotifier.value);
+                        endDate = dateTime ?? DateTime.now();
                         return TextField(
+                          textInputAction: TextInputAction.next,
                           style: CustomThemes.styledPlainText,
                           controller: TextEditingController(
-                            text: dateTime != null ? "${dateTime.month.toString().padLeft(2, '0')}/${dateTime.day.toString().padLeft(2, '0')}/${dateTime.year}" : '',
+                            text: dateTime != null
+                                ? "${dateTime.month.toString().padLeft(2, '0')}/${dateTime.day.toString().padLeft(2, '0')}/${dateTime.year}"
+                                : '',
                           ),
                           readOnly: true,
                           onTap: () => _selectDate(context),
@@ -195,7 +257,8 @@ class MainApp extends StatelessWidget {
                             return Switch(
                               value: value,
                               activeColor: Colors.green,
-                              thumbColor: MaterialStateProperty.all<Color>(Colors.white),
+                              thumbColor:
+                                  WidgetStateProperty.all<Color>(Colors.white),
                               onChanged: (newValue) {
                                 _switchNotifier.value = newValue;
                               },
@@ -208,8 +271,11 @@ class MainApp extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
                       OutlinedButton(
-                          style: ButtonStyle(backgroundColor: WidgetStateProperty.all<Color>(Colors.grey)),
-                          onPressed: () async => await saveTaskAndRefresh(dac, title, description, repeat, endDate!),
+                          style: ButtonStyle(
+                              backgroundColor:
+                                  WidgetStateProperty.all<Color>(Colors.grey)),
+                          onPressed: () async => await saveTaskAndRefresh(dac,
+                              title, description, repeat, endDate!, context),
                           child: Text(
                             "Save",
                             style: CustomThemes.styledPlainText,
@@ -225,8 +291,46 @@ class MainApp extends StatelessWidget {
     );
   }
 
-  Future? saveTaskAndRefresh(TaskDac dac, String title, String description, bool repeat, DateTime endDate) {
-    dac.insertTask(Task(name: title, description: description, isRepeating: repeat, dueDate: endDate, frequency: RepeatFrequency(interval: 1, unit: RepeatUnit.days)));
-    dac.getAllTasks();
+  Future? saveTaskAndRefresh(TaskDac dac, String title, String description,
+      bool repeat, DateTime endDate, BuildContext context) async {
+    await dac.insertTask(Task(
+        name: title,
+        description: description,
+        isRepeating: repeat,
+        dueDate: endDate,
+        frequency: RepeatFrequency(interval: 1, unit: RepeatUnit.days)));
+    await dac.getAllTasks();
+    if (context.mounted) {
+      Navigator.pop(context);
+      toastification.show(
+        type: ToastificationType.success,
+        style: ToastificationStyle.flatColored,
+        autoCloseDuration: Duration(seconds: 5),
+        primaryColor: Colors.green,
+        title: Text(
+          'Success',
+          style: TextStyle(color: Colors.black),
+        ),
+        description: Text(
+          "Successfully created a new Dayly task!",
+          style: TextStyle(color: Colors.black),
+        ),
+        animationDuration: const Duration(milliseconds: 300),
+        icon: const Icon(Icons.check),
+        showIcon: true, // show or hide the icon
+        foregroundColor: Colors.black,
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
+        margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: const [
+          BoxShadow(
+            color: Color(0x07000000),
+            blurRadius: 16,
+            offset: Offset(0, 16),
+            spreadRadius: 0,
+          )
+        ],
+      );
+    }
   }
 }

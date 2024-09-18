@@ -18,6 +18,7 @@ dependencies:
   path: ^1.9.0
   sqflite: ^2.3.3+1
   stacked_listview: ^1.0.4
+  toastification: ^2.2.0
 
 dev_dependencies:
   flutter_test:
