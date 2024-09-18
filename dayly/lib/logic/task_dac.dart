@@ -61,7 +61,14 @@ class TaskDac extends GetxController {
       }
 
       tasks.assignAll(RxList([
-        for (final {'id': id, 'name': vname as String, 'description': vdescription as String, 'is_done': visDone, 'due_date': vdueDate as String, 'is_repeating': visRepating} in filteredTasks) Task(name: vname, isDone: (visDone is String ? visDone == "1" : visDone == 1), description: vdescription, dueDate: DateTime.tryParse(vdueDate), isRepeating: (visRepating is String ? visRepating == "1" : visRepating == 1), frequency: RepeatFrequency(interval: 1, unit: RepeatUnit.hours)),
+        for (final {'id': id, 'name': vname as String, 'description': vdescription as String, 'is_done': visDone, 'due_date': vdueDate as String, 'is_repeating': visRepating} in filteredTasks)
+          Task(
+              name: vname,
+              isDone: (visDone is String ? visDone == "1" : visDone == 1),
+              description: vdescription,
+              dueDate: DateTime.tryParse(vdueDate),
+              isRepeating: (visRepating is String ? visRepating == "1" : visRepating == 1),
+              frequency: RepeatFrequency(interval: 1, unit: RepeatUnit.hours)),
       ]));
     } else {
       var filterDate = DateTime.now();
@@ -71,7 +78,14 @@ class TaskDac extends GetxController {
       }).toList();
 
       tasks.assignAll(RxList([
-        for (final {'id': id, 'name': vname as String, 'description': vdescription as String, 'is_done': visDone, 'due_date': vdueDate as String, 'is_repeating': visRepating} in filteredTasks) Task(name: vname, isDone: (visDone is String ? visDone == "1" : visDone == 1), description: vdescription, dueDate: DateTime.tryParse(vdueDate), isRepeating: (visRepating is String ? visRepating == "1" : visRepating == 1), frequency: RepeatFrequency(interval: 1, unit: RepeatUnit.hours)),
+        for (final {'id': id, 'name': vname as String, 'description': vdescription as String, 'is_done': visDone, 'due_date': vdueDate as String, 'is_repeating': visRepating} in filteredTasks)
+          Task(
+              name: vname,
+              isDone: (visDone is String ? visDone == "1" : visDone == 1),
+              description: vdescription,
+              dueDate: DateTime.tryParse(vdueDate),
+              isRepeating: (visRepating is String ? visRepating == "1" : visRepating == 1),
+              frequency: RepeatFrequency(interval: 1, unit: RepeatUnit.hours)),
       ]));
     }
   }

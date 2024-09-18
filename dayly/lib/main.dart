@@ -26,6 +26,7 @@ class MainApp extends StatelessWidget {
 
   final ValueNotifier<DateTime?> _dateNotifier = ValueNotifier<DateTime?>(null);
   final ValueNotifier<bool> _switchNotifier = ValueNotifier<bool>(false);
+  final ValueNotifier<DateTime?> _currentSelectedDate = ValueNotifier<DateTime?>(null);
 
   MainApp({super.key});
 
@@ -52,18 +53,22 @@ class MainApp extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   const Center(child: UiQuote()),
-                  CalendarTimeline(
-                    initialDate: DateTime.now(),
-                    firstDate: DateTime.now(),
-                    lastDate: DateTime.now().add(const Duration(days: 365)),
-                    onDateSelected: (date) async => await dac.getAllTasks(date),
-                    leftMargin: 20,
-                    monthColor: Colors.white,
-                    dayColor: Colors.white,
-                    activeDayColor: Colors.white,
-                    activeBackgroundDayColor: Colors.grey,
-                    locale: 'en_ISO',
-                  ),
+                  ValueListenableBuilder<DateTime?>(
+                      valueListenable: _currentSelectedDate,
+                      builder: (context, dateTime, child) {
+                        return CalendarTimeline(
+                          initialDate: _currentSelectedDate.value != null ? _currentSelectedDate.value as DateTime : DateTime.now(),
+                          firstDate: DateTime.now(),
+                          lastDate: DateTime.now().add(const Duration(days: 365)),
+                          onDateSelected: (date) async => {_currentSelectedDate.value = date, await dac.getAllTasks(date)},
+                          leftMargin: 20,
+                          monthColor: Colors.white,
+                          dayColor: Colors.white,
+                          activeDayColor: Colors.white,
+                          activeBackgroundDayColor: Colors.grey,
+                          locale: 'en_ISO',
+                        );
+                      }),
                   Expanded(
                     child: AnimationLimiter(
                         child: Padding(
@@ -164,6 +169,8 @@ class MainApp extends StatelessWidget {
                   ValueListenableBuilder<DateTime?>(
                       valueListenable: _dateNotifier,
                       builder: (context, dateTime, child) {
+                        endDate = dateTime as DateTime;
+                        print(_dateNotifier.value);
                         return TextField(
                           style: CustomThemes.styledPlainText,
                           controller: TextEditingController(
@@ -202,7 +209,7 @@ class MainApp extends StatelessWidget {
                     children: [
                       OutlinedButton(
                           style: ButtonStyle(backgroundColor: WidgetStateProperty.all<Color>(Colors.grey)),
-                          onPressed: () => saveTaskAndRefresh(dac, title, description, repeat, endDate),
+                          onPressed: () async => await saveTaskAndRefresh(dac, title, description, repeat, endDate!),
                           child: Text(
                             "Save",
                             style: CustomThemes.styledPlainText,
@@ -220,5 +227,6 @@ class MainApp extends StatelessWidget {
 
   Future? saveTaskAndRefresh(TaskDac dac, String title, String description, bool repeat, DateTime endDate) {
     dac.insertTask(Task(name: title, description: description, isRepeating: repeat, dueDate: endDate, frequency: RepeatFrequency(interval: 1, unit: RepeatUnit.days)));
+    dac.getAllTasks();
   }
 }

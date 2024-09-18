@@ -6,7 +6,7 @@ import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 
 class QuoteLogic {
-  var quote = Quote(author: RxString(""), message: RxString(""));
+  var quote = Quote(author: RxString(""), message: RxString("Yo momma!"));
 
   QuoteLogic() {
     initialize();
@@ -17,8 +17,7 @@ class QuoteLogic {
   }
 
   Future<void> getQuote() async {
-    final response =
-        await http.get(Uri.parse('https://zenquotes.io/api/today'));
+    final response = await http.get(Uri.parse('https://zenquotes.io/api/today'));
 
     // Parse the response
     var parsedQuote = JsonQuote.fromJsonList(jsonDecode(response.body));
