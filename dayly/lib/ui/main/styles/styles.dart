@@ -7,6 +7,9 @@ abstract class CustomThemes {
     color: Colors.white,
   );
 
+  static TextStyle smallStyledPlainText =
+      TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold);
+
   static UnderlineInputBorder styledInputBorderWhite =
       UnderlineInputBorder(borderSide: BorderSide(color: Colors.white));
 
