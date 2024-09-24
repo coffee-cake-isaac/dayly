@@ -11,7 +11,6 @@ class JsonQuote {
     required this.h,
   });
 
-  // Factory method to create a single JsonQuote object from a Map
   factory JsonQuote.fromJson(Map<String, dynamic> json) {
     return JsonQuote(
       q: json['q'],
@@ -20,7 +19,6 @@ class JsonQuote {
     );
   }
 
-  // Static method to handle a list of JsonQuote objects from a List
   static List<JsonQuote> fromJsonList(List<dynamic> jsonList) {
     return jsonList
         .map((item) => JsonQuote.fromJson(item as Map<String, dynamic>))
