@@ -1,11 +1,16 @@
 import 'package:dayly/models/frequency.dart';
 import 'package:dayly/models/task.dart';
-import 'package:get/get.dart';
+import 'package:flutter/material.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 
-class TaskDac extends GetxController {
-  final tasks = <Task>[].obs;
+class TaskDac extends ChangeNotifier {
+  var tasks = <Task>[];
+
+  TaskDac() {
+    createDatabase();
+    getAllTasks(DateTime.now());
+  }
 
   Future createDatabase() async {
     final database = openDatabase(
@@ -24,27 +29,20 @@ class TaskDac extends GetxController {
 
   Future insertTask(Task task) async {
     try {
-      final database = openDatabase(
-          // Set the path to the database. Note: Using the `join` function from the
-          // `path` package is best practice to ensure the path is correctly
-          // constructed for each platform.
-          join(await getDatabasesPath(), 'tasks.db'));
+      final database = openDatabase(join(await getDatabasesPath(), 'tasks.db'));
 
       final db = await database;
 
       await db.insert('tasks', task.toMap(),
           conflictAlgorithm: ConflictAlgorithm.replace);
+      notifyListeners();
     } on Exception catch (exception) {
       print(exception);
     }
   }
 
   Future<void> getAllTasks([DateTime? selectedDate]) async {
-    final database = openDatabase(
-        // Set the path to the database. Note: Using the `join` function from the
-        // `path` package is best practice to ensure the path is correctly
-        // constructed for each platform.
-        join(await getDatabasesPath(), 'tasks.db'));
+    final database = openDatabase(join(await getDatabasesPath(), 'tasks.db'));
 
     final db = await database;
 
@@ -59,11 +57,10 @@ class TaskDac extends GetxController {
       }).toList();
 
       if (filteredTasks.isEmpty) {
-        tasks.assignAll(<Task>[]);
         return;
       }
 
-      tasks.assignAll(RxList([
+      tasks = [
         for (final {
               'id': id,
               'name': vname as String,
@@ -80,8 +77,9 @@ class TaskDac extends GetxController {
               isRepeating: (visRepating is String
                   ? visRepating == "1"
                   : visRepating == 1),
-              frequency: RepeatFrequency(interval: 1, unit: RepeatUnit.hours)),
-      ]));
+              frequency: RepeatFrequency(interval: 1, unit: RepeatUnit.hours))
+      ];
+      notifyListeners();
     } else {
       var filterDate = DateTime.now();
       var filteredTasks = result.where((task) {
@@ -91,7 +89,7 @@ class TaskDac extends GetxController {
             taskDate.day == filterDate.day;
       }).toList();
 
-      tasks.assignAll(RxList([
+      tasks = [
         for (final {
               'id': id,
               'name': vname as String,
@@ -109,7 +107,8 @@ class TaskDac extends GetxController {
                   ? visRepating == "1"
                   : visRepating == 1),
               frequency: RepeatFrequency(interval: 1, unit: RepeatUnit.hours)),
-      ]));
+      ];
+      notifyListeners();
     }
   }
 }

@@ -2,14 +2,13 @@ import 'package:dayly/logic/task_dac.dart';
 import 'package:dayly/models/frequency.dart';
 import 'package:dayly/models/task.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:toastification/toastification.dart';
 
 import 'styles/styles.dart';
 
 class AddTask extends StatelessWidget {
-  final TaskDac dac;
-
-  const AddTask({Key? key, required this.dac}) : super(key: key);
+  const AddTask({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -34,118 +33,122 @@ class AddTask extends StatelessWidget {
       }
     }
 
-    return Scaffold(
-      backgroundColor: const Color.fromARGB(255, 38, 40, 45),
-      body: SafeArea(
-          child: Container(
-              child: Padding(
-        padding: const EdgeInsets.all(10),
-        child: Column(
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                Text(
-                  "Create a Task",
-                  style: TextStyle(fontSize: 32, color: Colors.white),
-                ),
-              ],
-            ),
-            TextField(
-              textCapitalization: TextCapitalization.sentences,
-              textInputAction: TextInputAction.next,
-              onChanged: (value) => title = value,
-              style: TextStyle(color: Colors.white),
-              decoration: CustomThemes.getDecor('Title'),
-            ),
-            const SizedBox(height: 10),
-            TextField(
-                textInputAction: TextInputAction.next,
-                textCapitalization: TextCapitalization.sentences,
-                onChanged: (value) => description = value,
-                style: TextStyle(color: Colors.white),
-                decoration: CustomThemes.getDecor('Description')),
-            const SizedBox(height: 10),
-            ValueListenableBuilder<DateTime?>(
-                valueListenable: _dateNotifier,
-                builder: (context, dateTime, child) {
-                  endDate = dateTime ?? DateTime.now();
-                  return TextField(
+    return ChangeNotifierProvider(
+        create: (context) => TaskDac(),
+        builder: (context, child) {
+          return Scaffold(
+            backgroundColor: const Color.fromARGB(255, 38, 40, 45),
+            body: SafeArea(
+                child: Container(
+                    child: Padding(
+              padding: const EdgeInsets.all(10),
+              child: Column(
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Text(
+                        "Create a Task",
+                        style: TextStyle(fontSize: 32, color: Colors.white),
+                      ),
+                    ],
+                  ),
+                  TextField(
+                    textCapitalization: TextCapitalization.sentences,
                     textInputAction: TextInputAction.next,
-                    style: CustomThemes.styledPlainText,
-                    controller: TextEditingController(
-                      text: dateTime != null
-                          ? "${dateTime.month.toString().padLeft(2, '0')}/${dateTime.day.toString().padLeft(2, '0')}/${dateTime.year}"
-                          : '',
-                    ),
-                    readOnly: true,
-                    onTap: () => _selectDate(context),
-                    decoration: CustomThemes.getDecor('MM/DD/YYYY'),
-                  );
-                }),
-            const SizedBox(height: 10),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  "Repeat",
-                  style: CustomThemes.styledPlainText,
-                ),
-                ValueListenableBuilder<bool>(
-                    valueListenable: _switchNotifier,
-                    builder: (context, value, child) {
-                      return Switch(
-                        value: value,
-                        activeColor: Colors.green,
-                        thumbColor:
-                            WidgetStateProperty.all<Color>(Colors.white),
-                        onChanged: (newValue) {
-                          _switchNotifier.value = newValue;
-                        },
-                      );
-                    }),
-              ],
-            ),
-            const SizedBox(height: 10),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                Expanded(
-                  child: OutlinedButton(
-                      style: ButtonStyle(
-                          backgroundColor:
-                              WidgetStateProperty.all<Color>(Colors.grey)),
-                      onPressed: () async => await saveTaskAndRefresh(
-                          dac, title, description, repeat, endDate!, context),
-                      child: Text(
-                        "Save",
+                    onChanged: (value) => title = value,
+                    style: TextStyle(color: Colors.white),
+                    decoration: CustomThemes.getDecor('Title'),
+                  ),
+                  const SizedBox(height: 10),
+                  TextField(
+                      textInputAction: TextInputAction.next,
+                      textCapitalization: TextCapitalization.sentences,
+                      onChanged: (value) => description = value,
+                      style: TextStyle(color: Colors.white),
+                      decoration: CustomThemes.getDecor('Description')),
+                  const SizedBox(height: 10),
+                  ValueListenableBuilder<DateTime?>(
+                      valueListenable: _dateNotifier,
+                      builder: (context, dateTime, child) {
+                        endDate = dateTime ?? DateTime.now();
+                        return TextField(
+                          textInputAction: TextInputAction.next,
+                          style: CustomThemes.styledPlainText,
+                          controller: TextEditingController(
+                            text: dateTime != null
+                                ? "${dateTime.month.toString().padLeft(2, '0')}/${dateTime.day.toString().padLeft(2, '0')}/${dateTime.year}"
+                                : '',
+                          ),
+                          readOnly: true,
+                          onTap: () => _selectDate(context),
+                          decoration: CustomThemes.getDecor('MM/DD/YYYY'),
+                        );
+                      }),
+                  const SizedBox(height: 10),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        "Repeat",
                         style: CustomThemes.styledPlainText,
-                      )),
-                )
-              ],
-            ),
-            SizedBox(height: 10),
-            Text(
-              "YOU HAVE ADDED 432 TASKS THIS YEAR! WAY TO GO! 🎉",
-              style: CustomThemes.smallStyledPlainText,
-            )
-          ],
-        ),
-      ))),
-    );
+                      ),
+                      ValueListenableBuilder<bool>(
+                          valueListenable: _switchNotifier,
+                          builder: (context, value, child) {
+                            return Switch(
+                              value: value,
+                              activeColor: Colors.green,
+                              thumbColor:
+                                  WidgetStateProperty.all<Color>(Colors.white),
+                              onChanged: (newValue) {
+                                _switchNotifier.value = newValue;
+                              },
+                            );
+                          }),
+                    ],
+                  ),
+                  const SizedBox(height: 10),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Expanded(
+                        child: OutlinedButton(
+                            style: ButtonStyle(
+                                backgroundColor: WidgetStateProperty.all<Color>(
+                                    Colors.grey)),
+                            onPressed: () async => await saveTaskAndRefresh(
+                                title, description, repeat, endDate!, context),
+                            child: Text(
+                              "Save",
+                              style: CustomThemes.styledPlainText,
+                            )),
+                      )
+                    ],
+                  ),
+                  SizedBox(height: 10),
+                  Text(
+                    "YOU HAVE ADDED 432 TASKS THIS YEAR! WAY TO GO! 🎉",
+                    style: CustomThemes.smallStyledPlainText,
+                  )
+                ],
+              ),
+            ))),
+          );
+        });
   }
-}
 
-Future? saveTaskAndRefresh(TaskDac dac, String title, String description,
-    bool repeat, DateTime endDate, BuildContext context) async {
-  await dac.insertTask(Task(
-      name: title,
-      description: description,
-      isRepeating: repeat,
-      dueDate: endDate,
-      frequency: RepeatFrequency(interval: 1, unit: RepeatUnit.days)));
-  await dac.getAllTasks();
-  if (context.mounted) {
+  Future? saveTaskAndRefresh(String title, String description, bool repeat,
+      DateTime endDate, BuildContext context) async {
+    var dac = Provider.of<TaskDac>(context, listen: false);
+
+    await dac.insertTask(Task(
+        name: title,
+        description: description,
+        isRepeating: repeat,
+        dueDate: endDate,
+        frequency: RepeatFrequency(interval: 1, unit: RepeatUnit.days)));
+    await dac.getAllTasks();
     Navigator.pop(context);
     toastification.show(
       type: ToastificationType.success,
