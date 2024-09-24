@@ -21,10 +21,8 @@ class Quote extends ChangeNotifier {
     final response =
         await http.get(Uri.parse('https://zenquotes.io/api/today'));
 
-    // Parse the response
     var parsedQuote = JsonQuote.fromJsonList(jsonDecode(response.body));
 
-    // Update the quote object with the API data
     author = "- ${parsedQuote.first.a}";
     message = parsedQuote.first.q;
     isLoading = false;
